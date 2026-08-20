@@ -1,0 +1,244 @@
+{% extends "deteksi/base.html" %}
+{% load static %}
+{% load i18n_extras %}
+{% block title %}Beranda{% endblock %}
+
+{% block content %}
+<div class="mb-6">
+  <h1 class="text-2xl font-bold text-slate-900">{{ t.beranda_judul }}</h1>
+  <p class="text-slate-500 mt-1">{{ t.beranda_welcome }}</p>
+  <p class="text-slate-400 text-sm mt-0.5">{{ t.beranda_subtitle }}</p>
+</div>
+
+{% if not model_ready %}
+<div class="mb-6 rounded-xl border border-amber-200 bg-amber-50 text-amber-800 px-4 py-3 text-sm flex items-start gap-3">
+  <svg class="w-5 h-5 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v4m0 4h.01M10.3 3.9 1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/>
+  </svg>
+  <div>
+    <p class="font-semibold">{{ t.beranda_model_belum_siap }}</p>
+    <p class="mt-0.5">{{ model_error }}</p>
+  </div>
+</div>
+{% endif %}
+
+<!-- ============ RINGKASAN STATISTIK ============ -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-6">
+
+  <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 flex items-start gap-4">
+    <div class="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center flex-shrink-0">
+      <svg class="w-6 h-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M3 12h4l2 6 4-14 2 8h6"/>
+      </svg>
+    </div>
+    <div>
+      <p class="text-2xl font-bold text-slate-900 leading-none">{{ total_deteksi }}</p>
+      <p class="text-sm text-slate-500 mt-1.5">{{ t.beranda_stat_total_deteksi }}</p>
+      {% if delta_pct is not None %}
+      <p class="text-xs {% if delta_pct >= 0 %}text-emerald-600{% else %}text-red-500{% endif %} font-medium mt-1 flex items-center gap-1">
+        <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m0-12 5 5m-5-5-5 5"/></svg>
+        {{ delta_pct }}% {{ t.common_dari_minggu_lalu }}
+      </p>
+      {% else %}
+      <p class="text-xs text-slate-400 font-medium mt-1">{{ t.beranda_belum_ada_minggu_lalu }}</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 flex items-start gap-4">
+    <div class="w-12 h-12 rounded-full bg-emerald-50 flex items-center justify-center flex-shrink-0">
+      <svg class="w-6 h-6 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+      </svg>
+    </div>
+    <div>
+      <p class="text-2xl font-bold text-slate-900 leading-none">{% if avg_confidence is not None %}{{ avg_confidence }}%{% else %}-{% endif %}</p>
+      <p class="text-sm text-slate-500 mt-1.5">{{ t.beranda_stat_avg_confidence }}</p>
+      {% if conf_delta_pct is not None %}
+      <p class="text-xs {% if conf_delta_pct >= 0 %}text-emerald-600{% else %}text-red-500{% endif %} font-medium mt-1 flex items-center gap-1">
+        <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m0-12 5 5m-5-5-5 5"/></svg>
+        {{ conf_delta_pct }}% {{ t.common_dari_minggu_lalu }}
+      </p>
+      {% else %}
+      <p class="text-xs text-slate-400 font-medium mt-1">{{ t.beranda_dihitung_seluruh_riwayat }}</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 flex items-start gap-4">
+    <div class="w-12 h-12 rounded-full bg-violet-50 flex items-center justify-center flex-shrink-0">
+      <svg class="w-6 h-6 text-violet-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="9" stroke-linecap="round"/>
+        <path stroke-linecap="round" d="M12 7v5l3.2 2"/>
+      </svg>
+    </div>
+    <div>
+      <p class="text-2xl font-bold text-slate-900 leading-none">{{ total_waktu_label }}</p>
+      <p class="text-sm text-slate-500 mt-1.5">{{ t.beranda_stat_total_waktu }}</p>
+      {% if waktu_delta_pct is not None %}
+      <p class="text-xs {% if waktu_delta_pct >= 0 %}text-emerald-600{% else %}text-red-500{% endif %} font-medium mt-1 flex items-center gap-1">
+        <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m0-12 5 5m-5-5-5 5"/></svg>
+        {{ waktu_delta_pct }}% {{ t.common_dari_minggu_lalu }}
+      </p>
+      {% else %}
+      <p class="text-xs text-slate-400 font-medium mt-1">{{ t.beranda_akumulasi_waktu_server }}</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 flex items-start gap-4">
+    <div class="w-12 h-12 rounded-full bg-amber-50 flex items-center justify-center flex-shrink-0">
+      <svg class="w-6 h-6 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 3l7 3v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z"/>
+      </svg>
+    </div>
+    <div>
+      <p class="text-2xl font-bold text-slate-900 leading-none">{% if terakhir %}{{ terakhir.label }}{% else %}-{% endif %}</p>
+      <p class="text-sm text-slate-500 mt-1.5">{{ t.beranda_stat_kondisi_terakhir }}</p>
+      <p class="text-xs text-slate-400 font-medium mt-1">{% if terakhir %}{{ terakhir.created_at|date:tgl_format }}, {{ terakhir.created_at|date:"H:i" }} {{ t.common_wib }}{% else %}{{ t.beranda_belum_ada_deteksi }}{% endif %}</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============ DETEKSI SEKARANG + AKTIVITAS TERAKHIR ============ -->
+<div class="grid grid-cols-1 lg:grid-cols-5 gap-6 items-stretch mb-6">
+
+  <!-- Deteksi Ban Sekarang -->
+  <div class="lg:col-span-3 bg-white rounded-2xl border border-slate-200 shadow-sm p-6 flex flex-col sm:flex-row items-center gap-6">
+    <div class="flex-1">
+      <h2 class="font-semibold text-slate-800 text-lg mb-1.5">{{ t.beranda_deteksi_sekarang_judul }}</h2>
+      <p class="text-slate-500 text-sm mb-5">{{ t.beranda_deteksi_sekarang_desc }}</p>
+      <div class="flex flex-col sm:flex-row gap-3">
+        <a href="{% url 'deteksi:deteksi_page' %}"
+           class="inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-5 rounded-xl transition">
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5M4 16v3a2 2 0 002 2h12a2 2 0 002-2v-3"/>
+          </svg>
+          {{ t.beranda_upload_gambar }}
+        </a>
+        <a href="{% url 'deteksi:deteksi_page' %}"
+           class="inline-flex items-center justify-center gap-2 border border-slate-300 text-slate-600 hover:bg-slate-50 font-medium py-3 px-5 rounded-xl transition">
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 8a2 2 0 012-2h1.5l1-1.5h7l1 1.5H18a2 2 0 012 2v9a2 2 0 01-2 2H6a2 2 0 01-2-2V8z"/>
+            <circle cx="12" cy="12.5" r="3.2" stroke-linecap="round"/>
+          </svg>
+          {{ t.beranda_gunakan_kamera }}
+        </a>
+      </div>
+    </div>
+    <div class="flex-shrink-0 w-48 sm:w-56">
+      <img src="{% static 'deteksi/img/ilustrasi-deteksi.png' %}" alt="Ilustrasi deteksi ban" class="w-full h-auto">
+    </div>
+  </div>
+
+  <!-- Aktivitas Terakhir -->
+  <div class="lg:col-span-2 bg-white rounded-2xl border border-slate-200 shadow-sm p-6 flex flex-col">
+    <div class="flex items-center justify-between mb-3">
+      <h2 class="font-semibold text-slate-800">{{ t.beranda_aktivitas_terakhir }}</h2>
+      <a href="{% url 'deteksi:riwayat_page' %}" class="text-blue-600 text-sm font-medium hover:underline">{{ t.beranda_lihat_semua }}</a>
+    </div>
+    <div class="divide-y divide-slate-100">
+      {% for row in aktivitas %}
+      <a href="{% url 'deteksi:laporan_page' row.pk %}" class="flex items-start gap-3 py-3 hover:bg-slate-50 -mx-2 px-2 rounded-lg transition">
+        <div class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0
+          {% if row.label == 'BAIK' %}bg-emerald-50 text-emerald-600{% elif row.label == 'PERHATIAN' %}bg-amber-50 text-amber-600{% else %}bg-red-50 text-red-600{% endif %}">
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="6" stroke-linecap="round"/><path stroke-linecap="round" d="M20 20l-3.5-3.5"/></svg>
+        </div>
+        <div class="flex-1 min-w-0">
+          <p class="text-sm font-medium text-slate-700">{{ t.beranda_deteksi_prefix }}: {{ row.code_label|kelas_i18n:bahasa_aktif }} ({{ row.label|status_title:bahasa_aktif }})</p>
+          <p class="text-xs text-slate-400 truncate">{{ t.beranda_keyakinan }} {{ row.confidence }}%</p>
+        </div>
+        <span class="text-xs text-slate-400 flex-shrink-0">{{ row.created_at|date:"H:i" }} {{ t.common_wib }}</span>
+      </a>
+      {% empty %}
+      <p class="text-sm text-slate-400 py-6 text-center">{{ t.beranda_belum_ada_aktivitas }}</p>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<!-- ============ STATISTIK DETEKSI + AKSI CEPAT ============ -->
+<div class="grid grid-cols-1 lg:grid-cols-5 gap-6 mb-6">
+
+  <!-- Statistik Deteksi -->
+  <div class="lg:col-span-2 bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+    <div class="flex items-center justify-between mb-5">
+      <h2 class="font-semibold text-slate-800">{{ t.beranda_statistik_deteksi }}</h2>
+      <span class="flex items-center gap-1.5 text-xs text-slate-500 border border-slate-200 rounded-lg px-2.5 py-1.5">
+        {{ t.beranda_tujuh_hari_terakhir }}
+      </span>
+    </div>
+    <div class="flex items-center gap-5">
+      <div class="relative w-28 h-28 flex-shrink-0">
+        <svg viewBox="0 0 100 100" class="w-28 h-28 -rotate-90">
+          <circle cx="50" cy="50" r="42" fill="none" stroke="#e2e8f0" stroke-width="12"/>
+          {% for d in donut %}
+          <circle cx="50" cy="50" r="42" fill="none" stroke="{% if d.key == 'BAIK' %}#10b981{% elif d.key == 'PERHATIAN' %}#f59e0b{% else %}#ef4444{% endif %}"
+                  stroke-width="12" stroke-dasharray="{{ d.dash }} {{ d.dash_gap }}" stroke-dashoffset="{{ d.dash_offset }}" stroke-linecap="round"/>
+          {% endfor %}
+        </svg>
+        <div class="absolute inset-0 flex flex-col items-center justify-center">
+          <span class="text-xl font-bold text-slate-900">{{ total_periode }}</span>
+          <span class="text-[11px] text-slate-400">{{ t.beranda_total }}</span>
+        </div>
+      </div>
+      <div class="flex-1 space-y-3">
+        {% for d in donut %}
+        <div>
+          <div class="flex items-center justify-between text-sm mb-1">
+            <span class="flex items-center gap-1.5 text-slate-600"><span class="w-2.5 h-2.5 rounded-full {{ d.meta.dot }}"></span>{{ d.key|status_title:bahasa_aktif }}</span>
+            <span class="text-slate-500">{{ d.count }} ({{ d.pct }}%)</span>
+          </div>
+          <div class="w-full h-1.5 rounded-full bg-slate-100 overflow-hidden">
+            <div class="h-full rounded-full {{ d.meta.dot }}" style="width:{{ d.pct }}%"></div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Aksi Cepat -->
+  <div class="lg:col-span-3 bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+    <h2 class="font-semibold text-slate-800 mb-5">{{ t.beranda_aksi_cepat }}</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+      <a href="{% url 'deteksi:deteksi_page' %}"
+         class="flex flex-col items-center text-center gap-2 rounded-xl border border-slate-200 hover:bg-blue-50 hover:border-blue-200 transition px-3 py-5">
+        <div class="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center">
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="6" stroke-linecap="round"/><path stroke-linecap="round" d="M20 20l-3.5-3.5"/></svg>
+        </div>
+        <span class="text-sm font-medium text-slate-700">{{ t.beranda_mulai_deteksi }}</span>
+        <span class="text-xs text-slate-400 leading-snug">{{ t.beranda_deteksi_kondisi_sekarang }}</span>
+      </a>
+      <a href="{% url 'deteksi:riwayat_page' %}"
+         class="flex flex-col items-center text-center gap-2 rounded-xl border border-slate-200 hover:bg-emerald-50 hover:border-emerald-200 transition px-3 py-5">
+        <div class="w-10 h-10 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center">
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9" stroke-linecap="round"/><path stroke-linecap="round" d="M12 7v5l3.2 2"/></svg>
+        </div>
+        <span class="text-sm font-medium text-slate-700">{{ t.beranda_lihat_riwayat }}</span>
+        <span class="text-xs text-slate-400 leading-snug">{{ t.beranda_lihat_semua_riwayat }}</span>
+      </a>
+      {% if terakhir %}
+      <a href="{% url 'deteksi:laporan_page' terakhir.pk %}"
+         class="flex flex-col items-center text-center gap-2 rounded-xl border border-slate-200 hover:bg-violet-50 hover:border-violet-200 transition px-3 py-5">
+        <div class="w-10 h-10 rounded-full bg-violet-50 text-violet-600 flex items-center justify-center">
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v11m0 0 4-4m-4 4-4-4M5 17v2a2 2 0 002 2h10a2 2 0 002-2v-2"/></svg>
+        </div>
+        <span class="text-sm font-medium text-slate-700">{{ t.beranda_laporan_terakhir }}</span>
+        <span class="text-xs text-slate-400 leading-snug">{{ t.beranda_buka_laporan_terbaru }}</span>
+      </a>
+      {% else %}
+      <div class="flex flex-col items-center text-center gap-2 rounded-xl border border-dashed border-slate-200 px-3 py-5 opacity-60">
+        <div class="w-10 h-10 rounded-full bg-slate-50 text-slate-400 flex items-center justify-center">
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v11m0 0 4-4m-4 4-4-4M5 17v2a2 2 0 002 2h10a2 2 0 002-2v-2"/></svg>
+        </div>
+        <span class="text-sm font-medium text-slate-500">{{ t.beranda_belum_ada_laporan }}</span>
+        <span class="text-xs text-slate-400 leading-snug">{{ t.beranda_lakukan_deteksi_pertama }}</span>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+
+{% endblock %}

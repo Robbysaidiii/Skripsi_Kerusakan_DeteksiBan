@@ -1,0 +1,251 @@
+{% extends "deteksi/base.html" %}
+{% load static %}
+{% block title %}Tentang{% endblock %}
+
+{% block content %}
+<div class="mb-6">
+  <h1 class="text-2xl font-bold text-slate-900">{{ t.tentang_judul }}</h1>
+  <p class="text-slate-500 mt-1">{{ t.tentang_subtitle }}</p>
+</div>
+
+<!-- ============ APA ITU DETEKSI BAN ============ -->
+<div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 sm:p-8 mb-6">
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10 items-center pb-6 mb-6 border-b border-slate-100">
+
+    <!-- Ilustrasi ban -->
+    <div class="relative rounded-2xl bg-gradient-to-b from-blue-50 to-slate-50 overflow-hidden py-10">
+      <svg viewBox="0 0 400 260" class="w-full max-w-sm mx-auto block">
+        <!-- soft blobs -->
+        <ellipse cx="200" cy="210" rx="150" ry="18" fill="#dbeafe" opacity="0.6"/>
+        <!-- leaves -->
+        <path d="M55 190 Q45 165 65 150 Q75 175 55 190Z" fill="#bfdbfe"/>
+        <path d="M60 195 Q48 178 60 158" stroke="#93c5fd" stroke-width="2" fill="none"/>
+        <path d="M345 190 Q355 165 335 150 Q325 175 345 190Z" fill="#bfdbfe"/>
+        <path d="M340 195 Q352 178 340 158" stroke="#93c5fd" stroke-width="2" fill="none"/>
+
+        <!-- tire -->
+        <g transform="translate(170,120)">
+          <circle r="78" fill="#1e293b"/>
+          <circle r="78" fill="none" stroke="#334155" stroke-width="10" stroke-dasharray="6 10"/>
+          <circle r="46" fill="#475569"/>
+          <circle r="30" fill="#cbd5e1"/>
+          <circle r="30" fill="none" stroke="#94a3b8" stroke-width="2"/>
+          <g fill="#94a3b8">
+            <circle cx="0" cy="-14" r="4"/>
+            <circle cx="12" cy="7" r="4"/>
+            <circle cx="-12" cy="7" r="4"/>
+          </g>
+          <circle r="8" fill="#64748b"/>
+        </g>
+
+        <!-- magnifying glass -->
+        <g transform="translate(225,150)">
+          <circle r="34" fill="#bfdbfe" fill-opacity="0.55" stroke="#2563eb" stroke-width="6"/>
+          <line x1="24" y1="24" x2="46" y2="46" stroke="#2563eb" stroke-width="9" stroke-linecap="round"/>
+        </g>
+
+        <!-- floating icon: camera -->
+        <g transform="translate(120,40)">
+          <circle r="20" fill="#2563eb"/>
+          <path d="M-9 -3h4l2-3h6l2 3h4a2 2 0 012 2v9a2 2 0 01-2 2h-18a2 2 0 01-2-2v-9a2 2 0 012-2z" fill="none" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/>
+          <circle r="3.4" fill="none" stroke="#fff" stroke-width="1.6"/>
+        </g>
+
+        <!-- floating icon: checklist -->
+        <g transform="translate(255,55)">
+          <circle r="18" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5"/>
+          <rect x="-8" y="-10" width="16" height="20" rx="2" fill="none" stroke="#334155" stroke-width="1.5"/>
+          <path d="M-4 -3h8M-4 1h8M-4 5h5" stroke="#334155" stroke-width="1.4" stroke-linecap="round"/>
+        </g>
+
+        <!-- floating icon: download -->
+        <g transform="translate(300,105)">
+          <circle r="18" fill="#eef2ff" stroke="#e2e8f0" stroke-width="1.5"/>
+          <path d="M0 -7v11m0 0-5-5m5 5 5-5" stroke="#2563eb" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M-7 8h14" stroke="#2563eb" stroke-width="1.8" stroke-linecap="round"/>
+        </g>
+      </svg>
+    </div>
+
+    <!-- Teks penjelasan -->
+    <div>
+      <h2 class="text-lg font-bold text-slate-900 mb-2">{{ t.tentang_apa_itu_judul }}</h2>
+      <p class="text-sm text-slate-500 leading-relaxed mb-6">
+        {{ t.tentang_apa_itu_desc }}
+      </p>
+
+      <div class="space-y-5">
+        <div class="flex items-start gap-3">
+          <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center flex-shrink-0">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+              <circle cx="11" cy="11" r="7" stroke-linecap="round"/>
+              <path stroke-linecap="round" d="M21 21l-3.8-3.8"/>
+            </svg>
+          </div>
+          <div>
+            <p class="font-bold text-slate-900">{{ t.tentang_fitur1_judul }}</p>
+            <p class="text-sm text-slate-500 leading-relaxed mt-0.5">
+              {{ t.tentang_fitur1_desc }}
+            </p>
+          </div>
+        </div>
+
+        <div class="flex items-start gap-3">
+          <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center flex-shrink-0">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M7 3h7l4 4v14a1 1 0 01-1 1H7a1 1 0 01-1-1V4a1 1 0 011-1z"/>
+              <path stroke-linecap="round" d="M9 12h6M9 16h6M9 8h2"/>
+            </svg>
+          </div>
+          <div>
+            <p class="font-bold text-slate-900">{{ t.tentang_fitur2_judul }}</p>
+            <p class="text-sm text-slate-500 leading-relaxed mt-0.5">
+              {{ t.tentang_fitur2_desc }}
+            </p>
+          </div>
+        </div>
+
+        <div class="flex items-start gap-3">
+          <div class="w-10 h-10 rounded-xl bg-violet-50 text-violet-600 flex items-center justify-center flex-shrink-0">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v11m0 0 4-4m-4 4-4-4M5 17v2a2 2 0 002 2h10a2 2 0 002-2v-2"/>
+            </svg>
+          </div>
+          <div>
+            <p class="font-bold text-slate-900">{{ t.tentang_fitur3_judul }}</p>
+            <p class="text-sm text-slate-500 leading-relaxed mt-0.5">
+              {{ t.tentang_fitur3_desc }}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ MISI / VISI / PRIVASI ============ -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+
+    <!-- Misi Kami -->
+    <div class="rounded-2xl border border-slate-200 p-5 flex flex-col">
+      <div class="flex items-center gap-3 mb-3">
+        <div class="w-11 h-11 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center flex-shrink-0">
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+            <circle cx="12" cy="12" r="8.5" stroke-linecap="round"/>
+            <circle cx="12" cy="12" r="4.5" stroke-linecap="round"/>
+            <circle cx="12" cy="12" r="0.9" fill="currentColor"/>
+          </svg>
+        </div>
+        <p class="font-bold text-slate-900">{{ t.tentang_misi_judul }}</p>
+      </div>
+      <p class="text-sm text-slate-500 leading-relaxed mb-4">
+        {{ t.tentang_misi_desc }}
+      </p>
+      <div class="mt-auto -mx-1 rounded-xl overflow-hidden aspect-[4/3]">
+        <img src="{% static 'deteksi/img/tentang/misi-kami.png' %}" alt="Misi Kami"
+             class="w-full h-full object-cover">
+      </div>
+    </div>
+
+    <!-- Visi Kami -->
+    <div class="rounded-2xl border border-slate-200 p-5 flex flex-col">
+      <div class="flex items-center gap-3 mb-3">
+        <div class="w-11 h-11 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center flex-shrink-0">
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/>
+            <circle cx="12" cy="12" r="3.2" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <p class="font-bold text-slate-900">{{ t.tentang_visi_judul }}</p>
+      </div>
+      <p class="text-sm text-slate-500 leading-relaxed mb-4">
+        {{ t.tentang_visi_desc }}
+      </p>
+      <div class="mt-auto -mx-1 rounded-xl overflow-hidden aspect-[4/3]">
+        <img src="{% static 'deteksi/img/tentang/visi-kami.png' %}" alt="Visi Kami"
+             class="w-full h-full object-cover">
+      </div>
+    </div>
+
+    <!-- Privasi & Keamanan -->
+    <div class="rounded-2xl border border-slate-200 p-5 flex flex-col">
+      <div class="flex items-center gap-3 mb-3">
+        <div class="w-11 h-11 rounded-full bg-violet-50 text-violet-600 flex items-center justify-center flex-shrink-0">
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 3.5 19 6.5v5c0 5-3 8.2-7 9.5-4-1.3-7-4.5-7-9.5v-5z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9.6 12.2l1.7 1.7 3.1-3.4"/>
+          </svg>
+        </div>
+        <p class="font-bold text-slate-900">{{ t.tentang_privasi_judul }}</p>
+      </div>
+      <p class="text-sm text-slate-500 leading-relaxed mb-4">
+        {{ t.tentang_privasi_desc }}
+      </p>
+      <div class="mt-auto -mx-1 rounded-xl overflow-hidden aspect-[4/3]">
+        <img src="{% static 'deteksi/img/tentang/privasi-keamanan.png' %}" alt="Privasi &amp; Keamanan"
+             class="w-full h-full object-cover">
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ INFORMASI APLIKASI ============ -->
+<div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 sm:p-8">
+  <h3 class="font-bold text-slate-900 mb-5">{{ t.tentang_info_aplikasi_judul }}</h3>
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-6">
+
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-lg bg-blue-600 flex items-center justify-center flex-shrink-0">
+        <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+          <circle cx="12" cy="12" r="9" stroke-linecap="round"/>
+          <circle cx="12" cy="12" r="3.2" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="min-w-0">
+        <p class="text-xs text-slate-400">{{ info_aplikasi.nama }}</p>
+        <p class="text-sm font-semibold text-slate-800">{{ t.tentang_versi }} {{ info_aplikasi.versi }}</p>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center flex-shrink-0">
+        <svg class="w-5 h-5 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+          <rect x="3.5" y="5" width="17" height="15" rx="2"/>
+          <path stroke-linecap="round" d="M3.5 9.5h17M8 3v3.6M16 3v3.6"/>
+        </svg>
+      </div>
+      <div class="min-w-0">
+        <p class="text-xs text-slate-400">{{ t.tentang_rilis }}</p>
+        <p class="text-sm font-semibold text-slate-800">{{ info_aplikasi.rilis }}</p>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center flex-shrink-0">
+        <svg class="w-5 h-5 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M8 8 4 12l4 4M16 8l4 4-4 4M13.5 6l-3 12"/>
+        </svg>
+      </div>
+      <div class="min-w-0">
+        <p class="text-xs text-slate-400">{{ t.tentang_teknologi }}</p>
+        <p class="text-sm font-semibold text-slate-800">{{ info_aplikasi.teknologi }}</p>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center flex-shrink-0">
+        <svg class="w-5 h-5 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+          <circle cx="12" cy="12" r="9" stroke-linecap="round"/>
+          <path stroke-linecap="round" d="M3 12h18M12 3c2.5 2.5 3.8 5.8 3.8 9s-1.3 6.5-3.8 9c-2.5-2.5-3.8-5.8-3.8-9S9.5 5.5 12 3z"/>
+        </svg>
+      </div>
+      <div class="min-w-0">
+        <p class="text-xs text-slate-400">{{ t.tentang_dikembangkan_di }}</p>
+        <p class="text-sm font-semibold text-slate-800 flex items-center gap-1.5">
+          {{ info_aplikasi.negara }} <span>🇮🇩</span>
+        </p>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

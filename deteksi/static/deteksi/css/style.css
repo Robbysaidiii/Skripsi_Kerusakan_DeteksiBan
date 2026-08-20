@@ -1,0 +1,371 @@
+/* Penyesuaian kecil di luar Tailwind utility */
+#loading-overlay.flex,
+#camera-placeholder.flex,
+#upload-dropzone.flex {
+  display: flex;
+}
+
+.tab-btn.active {
+  border-color: #2563eb;
+  background-color: #eff6ff;
+  color: #2563eb;
+}
+.tab-btn.inactive {
+  border-color: #e2e8f0;
+  background-color: #fff;
+  color: #64748b;
+}
+
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 8px; }
+
+/* ============ PENGATURAN: toggle switch & select bersih ============ */
+.toggle-switch { position: relative; display: inline-block; width: 44px; height: 24px; flex-shrink: 0; }
+.toggle-switch input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; z-index: 1; }
+.toggle-switch .toggle-track {
+  position: absolute; inset: 0; background: #cbd5e1; border-radius: 9999px; transition: background-color .2s ease;
+}
+.toggle-switch .toggle-thumb {
+  position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; background: #fff;
+  border-radius: 9999px; box-shadow: 0 1px 3px rgba(0,0,0,.2); transition: transform .2s ease;
+}
+.toggle-switch input:checked ~ .toggle-track { background: #2563eb; }
+.toggle-switch input:checked ~ .toggle-thumb { transform: translateX(20px); }
+.toggle-switch input:disabled ~ .toggle-track { opacity: .5; cursor: not-allowed; }
+.toggle-switch input:focus-visible ~ .toggle-track { box-shadow: 0 0 0 3px rgba(37,99,235,.25); }
+
+.select-clean {
+  appearance: none; -webkit-appearance: none; -moz-appearance: none;
+  background-image: none;
+}
+
+.settings-nav-item.active {
+  background-color: #eff6ff; color: #2563eb; font-weight: 600;
+}
+.settings-nav-item:not(.active) { color: #475569; }
+.settings-nav-item:not(.active):hover { background-color: #f8fafc; }
+
+.settings-toast {
+  position: fixed; top: 24px; right: 24px; z-index: 60;
+  animation: settings-toast-in .25s ease-out;
+}
+@keyframes settings-toast-in {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ============ PREVIEW LAPORAN & CETAK PDF ============ */
+
+/* Konten siap-cetak: disembunyikan di layar, hanya tampil saat print
+   atau saat disalin ke dalam modal preview */
+.print-only { display: none; }
+
+#preview-modal-body .print-only,
+#preview-modal-body .print-header,
+#preview-modal-body .print-section { display: block; }
+
+#laporan-print-content h1 { font-size: 1.15rem; font-weight: 700; color: #0f172a; margin-bottom: 0; }
+#laporan-print-content h2 { font-size: 0.85rem; font-weight: 600; color: #1e293b; margin-bottom: 5px; }
+.print-header {
+  border-bottom: 2px solid #2563eb; padding-bottom: 6px; margin-bottom: 10px;
+  display: flex; align-items: flex-end; justify-content: space-between; gap: 12px;
+}
+.print-brand { font-size: 0.8rem; font-weight: 700; color: #2563eb; letter-spacing: 0.03em; margin: 0 0 2px 0; text-transform: uppercase; }
+.print-header-right { text-align: right; }
+.print-header p { color: #64748b; font-size: 0.72rem; margin: 0; }
+.print-section { margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px solid #e2e8f0; }
+.print-section:last-child { border-bottom: none; }
+.print-main { display: flex; gap: 12px; align-items: flex-start; flex-wrap: wrap; }
+.print-photo { width: 100px; height: 100px; object-fit: cover; border-radius: 8px; flex-shrink: 0; }
+.print-table { border-collapse: collapse; width: 100%; font-size: 0.72rem; }
+.print-table td { padding: 2px 6px; border-bottom: 1px solid #f1f5f9; }
+.print-table td:first-child { color: #64748b; width: 45%; }
+.print-badge { background: #f8fafc; border-radius: 8px; padding: 8px 12px; }
+.print-label { font-size: 0.65rem; color: #64748b; margin-bottom: 1px; }
+.print-badge-value { font-size: 0.9rem; font-weight: 700; color: #0f172a; }
+.print-confidence { font-size: 1.2rem; font-weight: 700; color: #2563eb; line-height: 1.2; }
+.print-desc { font-size: 0.72rem; color: #475569; line-height: 1.3; }
+#laporan-print-content ul { margin: 3px 0 0 16px; font-size: 0.72rem; color: #475569; }
+#laporan-print-content ul li { margin-bottom: 2px; }
+
+/* Blok tanda tangan kop surat: tanggal, ruang ttd, nama perusahaan —
+   diletakkan di pojok kanan bawah laporan (dipakai saat cetak/PDF). */
+.print-signature {
+  display: flex; justify-content: flex-end; margin-top: 24px;
+}
+.print-signature-box { text-align: center; min-width: 170px; }
+.print-signature-box p { color: #475569; font-size: 0.72rem; margin: 0; }
+.print-signature-space { height: 48px; }
+.print-signature-name {
+  font-size: 0.8rem; font-weight: 700; color: #0f172a !important;
+  text-decoration: underline; text-underline-offset: 3px;
+}
+
+/* Modal preview */
+.preview-modal-overlay {
+  position: fixed; inset: 0; background: rgba(15, 23, 42, 0.55);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 50; padding: 24px;
+}
+.preview-modal-overlay.hidden { display: none; }
+.preview-modal-box {
+  background: #fff; border-radius: 16px; width: 100%; max-width: 720px;
+  max-height: 88vh; display: flex; flex-direction: column; overflow: hidden;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+}
+.preview-modal-topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 20px; border-bottom: 1px solid #e2e8f0; flex-shrink: 0;
+}
+.preview-modal-topbar h3 { font-size: 1.05rem; font-weight: 700; color: #0f172a; }
+.preview-modal-close {
+  font-size: 1.5rem; line-height: 1; color: #94a3b8; background: none; border: none;
+  cursor: pointer; padding: 4px 8px; border-radius: 8px;
+}
+.preview-modal-close:hover { background: #f1f5f9; color: #475569; }
+.preview-modal-body {
+  padding: 20px 24px; overflow-y: auto; flex: 1; background: #fff;
+}
+.preview-modal-footer {
+  display: flex; justify-content: flex-end; gap: 10px;
+  padding: 14px 20px; border-top: 1px solid #e2e8f0; flex-shrink: 0; background: #f8fafc;
+}
+.preview-btn { font-size: 0.9rem; font-weight: 500; padding: 9px 18px; border-radius: 10px; cursor: pointer; transition: background .15s; }
+.preview-btn-primary { background: #2563eb; color: #fff; border: none; }
+.preview-btn-primary:hover { background: #1d4ed8; }
+.preview-btn-secondary { background: #fff; color: #475569; border: 1px solid #e2e8f0; }
+.preview-btn-secondary:hover { background: #f1f5f9; }
+
+/* Saat mencetak (Download PDF): tampilkan hanya konten laporan siap-cetak,
+   sembunyikan sidebar, header, tombol aksi, dan tab agar hasil PDF rapi */
+.print-grid-2 {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px;
+}
+.print-grid-2 .print-section { margin-bottom: 8px; }
+
+@media print {
+  @page { size: A4; margin: 10mm 12mm; }
+
+  .no-print,
+  aside,
+  header.sticky,
+  .laporan-toolbar,
+  #preview-modal-overlay { display: none !important; }
+
+  html, body, main { margin: 0 !important; padding: 0 !important; background: #fff !important; }
+  main.p-8 { padding: 0 !important; }
+  .flex-1.ml-64 { margin-left: 0 !important; }
+
+  #laporan-print-content.print-only {
+    display: block !important;
+    width: 100% !important;
+    font-size: 11px;
+  }
+
+  #laporan-print-content .print-photo { width: 85px; height: 85px; }
+  #laporan-print-content * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+
+/* ============ SIDEBAR RESPONSIF (mobile off-canvas) ============ */
+.sidebar-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sidebar-backdrop {
+  display: none;
+}
+
+@media (max-width: 1023px) {
+  .app-sidebar {
+    transform: translateX(-100%);
+    transition: transform .25s ease;
+  }
+  .app-sidebar.sidebar-open {
+    transform: translateX(0);
+    box-shadow: 8px 0 24px rgba(15, 23, 42, .18);
+  }
+  .app-main {
+    margin-left: 0 !important;
+  }
+  .sidebar-backdrop.active {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, .5);
+    z-index: 30;
+    animation: sidebar-backdrop-in .2s ease-out;
+  }
+}
+
+@media (min-width: 1024px) {
+  .sidebar-toggle-btn {
+    display: none;
+  }
+}
+
+@keyframes sidebar-backdrop-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ============ DROPDOWN PROFIL (header) ============ */
+.profile-menu { position: relative; }
+
+.profile-menu-trigger {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.profile-dropdown {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  width: 220px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  box-shadow: 0 12px 32px rgba(15, 23, 42, .14);
+  padding: 8px;
+  opacity: 0;
+  transform: translateY(-6px);
+  pointer-events: none;
+  transition: opacity .15s ease, transform .15s ease;
+  z-index: 40;
+}
+
+.profile-dropdown.open {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.profile-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 9px 10px;
+  border-radius: 9px;
+  font-size: .875rem;
+  font-weight: 500;
+  color: #334155;
+  text-decoration: none;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+}
+
+.profile-dropdown-item:hover { background-color: #f8fafc; }
+
+.profile-dropdown-item.active {
+  background-color: #eff6ff;
+  color: #2563eb;
+  font-weight: 600;
+}
+
+.profile-dropdown-item svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+.profile-dropdown-divider {
+  height: 1px;
+  background: #e2e8f0;
+  margin: 6px 2px;
+}
+
+.profile-dropdown-logout {
+  color: #dc2626;
+}
+
+.profile-dropdown-logout:hover { background-color: #fef2f2; }
+
+/* ============ MODE GELAP ============
+   Diaktifkan lewat atribut data-theme="gelap" di <html>, yang nilainya
+   datang dari Pengaturan > Tema Tampilan (tersimpan di database, berlaku
+   ke seluruh halaman lewat context processor app_theme). */
+
+html[data-theme="gelap"] body {
+  background-color: #0b1220;
+  color: #e2e8f0;
+}
+
+/* Permukaan kartu / sidebar / header putih -> gelap */
+html[data-theme="gelap"] .bg-white,
+html[data-theme="gelap"] .bg-slate-50,
+html[data-theme="gelap"] .bg-slate-100 {
+  background-color: #141b2d !important;
+}
+
+html[data-theme="gelap"] .app-sidebar,
+html[data-theme="gelap"] header.sticky,
+html[data-theme="gelap"] .profile-dropdown,
+html[data-theme="gelap"] .preview-modal-box {
+  background-color: #10182a !important;
+}
+
+/* Border & pemisah */
+html[data-theme="gelap"] .border-slate-200,
+html[data-theme="gelap"] .border-slate-100,
+html[data-theme="gelap"] .border-slate-300,
+html[data-theme="gelap"] .divide-slate-100 > :not([hidden]) ~ :not([hidden]) {
+  border-color: #263248 !important;
+}
+
+/* Teks */
+html[data-theme="gelap"] .text-slate-900,
+html[data-theme="gelap"] .text-slate-800 {
+  color: #f1f5f9 !important;
+}
+html[data-theme="gelap"] .text-slate-700,
+html[data-theme="gelap"] .text-slate-600 {
+  color: #cbd5e1 !important;
+}
+html[data-theme="gelap"] .text-slate-500,
+html[data-theme="gelap"] .text-slate-400,
+html[data-theme="gelap"] .text-slate-300 {
+  color: #8291ab !important;
+}
+
+/* Aksen biru (item aktif, tombol outline, link) tetap biru tapi disesuaikan
+   supaya kontras enak di latar gelap */
+html[data-theme="gelap"] .bg-blue-50 {
+  background-color: rgba(37, 99, 235, .18) !important;
+}
+html[data-theme="gelap"] .text-blue-600,
+html[data-theme="gelap"] .text-blue-700 {
+  color: #60a5fa !important;
+}
+html[data-theme="gelap"] .border-blue-200,
+html[data-theme="gelap"] .border-blue-100 {
+  border-color: rgba(96, 165, 250, .35) !important;
+}
+
+/* Status hijau/kuning/merah: pertahankan warnanya, hanya lembutkan latar */
+html[data-theme="gelap"] .bg-emerald-50 { background-color: rgba(16, 185, 129, .14) !important; }
+html[data-theme="gelap"] .bg-amber-50 { background-color: rgba(245, 158, 11, .14) !important; }
+html[data-theme="gelap"] .bg-red-50 { background-color: rgba(239, 68, 68, .14) !important; }
+html[data-theme="gelap"] .text-emerald-600,
+html[data-theme="gelap"] .text-emerald-700 { color: #34d399 !important; }
+html[data-theme="gelap"] .text-amber-700,
+html[data-theme="gelap"] .text-amber-800 { color: #fbbf24 !important; }
+
+/* Input, select, tombol outline */
+html[data-theme="gelap"] select,
+html[data-theme="gelap"] input,
+html[data-theme="gelap"] textarea {
+  background-color: #141b2d !important;
+  color: #e2e8f0 !important;
+  border-color: #334155 !important;
+}
+html[data-theme="gelap"] .hover\:bg-slate-50:hover {
+  background-color: #1c2438 !important;
+}
+
+/* Scrollbar */
+html[data-theme="gelap"] ::-webkit-scrollbar-thumb { background: #334155; }
+
+/* Toggle switch tetap terbaca di gelap */
+html[data-theme="gelap"] .toggle-switch .toggle-track { background: #334155; }
+html[data-theme="gelap"] .toggle-switch input:checked ~ .toggle-track { background: #2563eb; }

@@ -1,0 +1,534 @@
+{% extends "deteksi/base.html" %}
+{% load static %}
+{% load i18n_extras %}
+{% block title %}Laporan Deteksi{% endblock %}
+
+{% block content %}
+<div class="no-print flex items-start justify-between gap-4 flex-wrap mb-1">
+  <div>
+    <h1 class="text-2xl font-bold text-slate-900">{{ t.laporan_judul }}</h1>
+    <p class="text-slate-500 mt-1">{{ t.laporan_subtitle }}</p>
+  </div>
+</div>
+
+<div class="no-print flex items-center justify-between gap-4 flex-wrap mt-5 mb-6">
+  <a href="{% url 'deteksi:riwayat_page' %}"
+     class="inline-flex items-center gap-2 border border-slate-200 text-slate-600 hover:bg-slate-50 text-sm font-medium px-4 py-2.5 rounded-xl transition">
+    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M15 6l-6 6 6 6"/>
+    </svg>
+    {{ t.laporan_kembali_riwayat }}
+  </a>
+
+  <div class="flex items-center gap-3">
+    {% if prev_item %}
+    <a href="{% url 'deteksi:laporan_page' prev_item.pk %}" class="text-sm text-slate-500 hover:text-blue-600 px-2">&larr; {{ t.laporan_lebih_lama }}</a>
+    {% endif %}
+    {% if next_item %}
+    <a href="{% url 'deteksi:laporan_page' next_item.pk %}" class="text-sm text-slate-500 hover:text-blue-600 px-2">{{ t.laporan_lebih_baru }} &rarr;</a>
+    {% endif %}
+    <button id="btn-preview-pdf" type="button"
+      class="flex items-center gap-2 border border-slate-200 text-slate-600 hover:bg-slate-50 font-medium px-5 py-2.5 rounded-xl transition">
+      <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M2.5 12S6 5 12 5s9.5 7 9.5 7-3.5 7-9.5 7-9.5-7-9.5-7z"/>
+        <circle cx="12" cy="12" r="3" stroke-linecap="round"/>
+      </svg>
+      {{ t.laporan_preview }}
+    </button>
+    <button id="btn-download-pdf" type="button"
+      class="flex items-center gap-2 border-2 border-blue-600 text-blue-600 hover:bg-blue-50 font-medium px-5 py-2.5 rounded-xl transition">
+      <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v11m0 0 4-4m-4 4-4-4M5 17v2a2 2 0 002 2h10a2 2 0 002-2v-2"/>
+      </svg>
+      {{ t.laporan_download_pdf }}
+    </button>
+    <button id="btn-bagikan" type="button"
+      class="flex items-center gap-2 border border-slate-200 text-slate-600 hover:bg-slate-50 font-medium px-5 py-2.5 rounded-xl transition">
+      <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+        <circle cx="18" cy="5" r="2.6" stroke-linecap="round"/>
+        <circle cx="6" cy="12" r="2.6" stroke-linecap="round"/>
+        <circle cx="18" cy="19" r="2.6" stroke-linecap="round"/>
+        <path stroke-linecap="round" d="M8.3 10.7l7.4-4.4M8.3 13.3l7.4 4.4"/>
+      </svg>
+      {{ t.laporan_bagikan }}
+    </button>
+  </div>
+</div>
+
+<!-- ============ KARTU INFORMASI UTAMA ============ -->
+<div id="laporan-cetak" class="no-print bg-white rounded-2xl border border-slate-200 shadow-sm p-6 mb-6">
+  <div class="flex flex-col lg:flex-row gap-6">
+
+    <!-- Foto ban -->
+    <div class="w-full lg:w-56 h-56 flex-shrink-0 rounded-xl overflow-hidden relative bg-slate-100">
+      {% if item.image %}
+        <img src="{{ item.image.url }}" alt="Foto ban" class="w-full h-full object-cover">
+      {% else %}
+        <div class="w-full h-full flex items-center justify-center text-slate-400 text-sm">{{ t.laporan_tidak_ada_gambar }}</div>
+      {% endif %}
+    </div>
+
+    <!-- Info deteksi -->
+    <div class="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4 content-start">
+      <div class="flex items-center gap-3">
+        <svg class="w-5 h-5 text-slate-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="2"/><path stroke-linecap="round" d="M3 9h18M8 3v3M16 3v3"/></svg>
+        <div>
+          <p class="text-xs text-slate-400">{{ t.laporan_tanggal_deteksi }}</p>
+          <p class="text-sm font-medium text-slate-700">{{ item.created_at|date:tgl_format }}, {{ item.created_at|date:"H:i" }} {{ t.common_wib }}</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <svg class="w-5 h-5 text-slate-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path stroke-linecap="round" d="M3 12h18M12 3a14 14 0 010 18 14 14 0 010-18z"/></svg>
+        <div>
+          <p class="text-xs text-slate-400">{{ t.laporan_metode_deteksi }}</p>
+          <p class="text-sm font-medium text-slate-700">{{ t.laporan_metode_nilai }}</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <svg class="w-5 h-5 text-slate-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><rect x="3" y="7" width="18" height="10" rx="2"/><path stroke-linecap="round" d="M7 7v10M11 7v10M15 7v10"/></svg>
+        <div>
+          <p class="text-xs text-slate-400">{{ t.laporan_kelas_terdeteksi }}</p>
+          <p class="text-sm font-medium text-slate-700">{{ item.code_label|kelas_i18n:bahasa_aktif }}</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <svg class="w-5 h-5 text-slate-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M4 17.5l1.5-8.5a2 2 0 012-1.6h9a2 2 0 012 1.6l1.5 8.5"/></svg>
+        <div>
+          <p class="text-xs text-slate-400">{{ t.laporan_ukuran_gambar }}</p>
+          <p class="text-sm font-medium text-slate-700">{% if item.width and item.height %}{{ item.width }} x {{ item.height }} px{% else %}-{% endif %}</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <svg class="w-5 h-5 text-slate-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        <div>
+          <p class="text-xs text-slate-400">{{ t.laporan_durasi_proses }}</p>
+          <p class="text-sm font-medium text-slate-700">{{ item.processing_ms|default:"-" }} ms</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <svg class="w-5 h-5 text-slate-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><rect x="4" y="2" width="16" height="20" rx="2"/><path stroke-linecap="round" d="M9 18h6"/></svg>
+        <div>
+          <p class="text-xs text-slate-400">{{ t.laporan_file_asli }}</p>
+          <p class="text-sm font-medium text-slate-700 truncate max-w-[180px]">{{ item.original_filename|default:"-" }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Kondisi ban -->
+    <div class="w-full lg:w-72 flex-shrink-0 bg-slate-50 rounded-xl p-5">
+      <p class="text-sm text-slate-500 mb-2">{{ t.laporan_kondisi_ban }}</p>
+      <span class="inline-flex items-center gap-1.5 {{ status_meta.badge }} font-semibold text-sm rounded-full px-3.5 py-1.5">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v4m0 4h.01M10.3 3.9 1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/>
+        </svg>
+        {{ item.label|status_title:bahasa_aktif }}
+      </span>
+
+      <p class="text-sm text-slate-500 mt-5 mb-1">{{ t.laporan_tingkat_keyakinan }}</p>
+      <p class="text-4xl font-bold {{ status_meta.value_color }} leading-none">{{ item.confidence }}%</p>
+      <p class="text-xs text-slate-500 mt-2.5 leading-relaxed">{{ item.label|status_desc:bahasa_aktif }}</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============ TAB ============ -->
+<div class="no-print flex items-center gap-8 border-b border-slate-200 mb-6 overflow-x-auto">
+  <button type="button" data-tab="ringkasan" class="laporan-tab whitespace-nowrap text-sm font-medium pb-3 border-b-2 border-blue-600 text-blue-600">{{ t.laporan_tab_ringkasan }}</button>
+  <button type="button" data-tab="detail" class="laporan-tab whitespace-nowrap text-sm font-medium pb-3 border-b-2 border-transparent text-slate-500 hover:text-slate-700">{{ t.laporan_tab_detail }}</button>
+  <button type="button" data-tab="rekomendasi" class="laporan-tab whitespace-nowrap text-sm font-medium pb-3 border-b-2 border-transparent text-slate-500 hover:text-slate-700">{{ t.laporan_tab_rekomendasi }}</button>
+</div>
+
+<div class="no-print grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+
+  <!-- ============ KOLOM KIRI (isi tab) ============ -->
+  <div class="lg:col-span-2 space-y-6">
+
+    <!-- ---- TAB: RINGKASAN ---- -->
+    <div id="panel-ringkasan" class="tab-panel space-y-6">
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+        <h2 class="font-semibold text-slate-800 mb-5">{{ t.laporan_ringkasan_hasil }}</h2>
+        <div class="flex items-start gap-4 mb-2">
+          <div class="w-11 h-11 rounded-full {{ status_meta.banner }} flex items-center justify-center flex-shrink-0">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+          </div>
+          <div>
+            <p class="font-semibold text-slate-800">{{ item.code_label|kelas_i18n:bahasa_aktif }} &mdash; {{ item.label|status_title:bahasa_aktif }}</p>
+            <p class="text-sm text-slate-500 mt-1 leading-relaxed">{{ item.label|status_desc:bahasa_aktif }}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+        <h2 class="font-semibold text-slate-800 mb-5">{{ t.laporan_probabilitas_per_kelas }}</h2>
+        <div class="space-y-4">
+          {% for b in breakdown %}
+          <div>
+            <div class="flex items-center justify-between text-sm mb-1.5">
+              <span class="text-slate-600">{{ b.code|kelas_i18n:bahasa_aktif }}</span>
+              <span class="font-medium text-slate-700">{{ b.value }}%</span>
+            </div>
+            <div class="w-full h-2 rounded-full bg-slate-100 overflow-hidden">
+              <div class="h-full rounded-full {% if b.color == 'green' %}bg-emerald-500{% elif b.color == 'amber' %}bg-amber-500{% elif b.color == 'red' %}bg-red-500{% else %}bg-slate-400{% endif %}" style="width:{{ b.value }}%"></div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="bg-amber-50 border border-amber-100 rounded-2xl px-5 py-4 flex gap-3">
+        <svg class="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v4m0 4h.01M10.3 3.9 1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/>
+        </svg>
+        <div>
+          <p class="text-sm font-semibold text-amber-800">{{ t.laporan_rekomendasi }}</p>
+          <p class="text-sm text-amber-700 leading-relaxed mt-0.5">{{ item.rekomendasi }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ---- TAB: DETAIL ANALISIS ---- -->
+    <div id="panel-detail" class="tab-panel hidden space-y-6">
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+        <h2 class="font-semibold text-slate-800 mb-5">{{ t.laporan_keyakinan_per_kelas }}</h2>
+        <div class="space-y-4">
+          {% for b in breakdown %}
+          <div>
+            <div class="flex items-center justify-between text-sm mb-1.5">
+              <span class="text-slate-600">{{ b.code|kelas_i18n:bahasa_aktif }} ({{ b.label|status_title:bahasa_aktif }})</span>
+              <span class="font-medium text-slate-700">{{ b.value }}%</span>
+            </div>
+            <div class="w-full h-2 rounded-full bg-slate-100 overflow-hidden">
+              <div class="h-full rounded-full {% if b.color == 'green' %}bg-emerald-500{% elif b.color == 'amber' %}bg-amber-500{% elif b.color == 'red' %}bg-red-500{% else %}bg-slate-400{% endif %}" style="width:{{ b.value }}%"></div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        <p class="text-xs text-slate-400 mt-5 leading-relaxed">
+          {% if bahasa_aktif == "en" %}
+          The analysis was performed with a feature-extraction pipeline (LBP, GLCM, Gabor, Wavelet, Canny, Hu Moments)
+          processed through a scaler, PCA, and an SVM model. The class with the highest probability
+          ({{ item.code_label|kelas_i18n:bahasa_aktif }}, {{ item.confidence }}%) was selected as the final result.
+          {% else %}
+          Analisis dilakukan dengan pipeline ekstraksi fitur (LBP, GLCM, Gabor, Wavelet, Canny, Hu Moments)
+          yang diproses melalui scaler, PCA, dan model SVM. Kelas dengan probabilitas tertinggi
+          ({{ item.code_label|kelas_i18n:bahasa_aktif }}, {{ item.confidence }}%) dipilih sebagai hasil akhir.
+          {% endif %}
+        </p>
+      </div>
+
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+        <h2 class="font-semibold text-slate-800 mb-4">{{ t.laporan_info_teknis }}</h2>
+        <div class="space-y-3.5 text-sm">
+          <div class="flex items-center justify-between">
+            <span class="text-slate-500">{{ t.laporan_kode_kelas_model }}</span>
+            <span class="font-medium text-slate-700">{{ item.code_label }}</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="text-slate-500">{{ t.laporan_user_agent }}</span>
+            <span class="font-medium text-slate-700 text-right truncate max-w-[260px]">{{ item.user_agent|default:"-" }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ---- TAB: REKOMENDASI ---- -->
+    <div id="panel-rekomendasi" class="tab-panel hidden">
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+        <div class="flex items-start gap-3 mb-5">
+          <div class="w-10 h-10 rounded-full {{ status_meta.banner }} flex items-center justify-center flex-shrink-0">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v4m0 4h.01M10.3 3.9 1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/>
+            </svg>
+          </div>
+          <div>
+            <h2 class="font-semibold text-slate-800">{{ t.laporan_rekomendasi_utama }}</h2>
+            <p class="text-sm text-slate-500 mt-1 leading-relaxed">{{ item.rekomendasi }}</p>
+          </div>
+        </div>
+
+        <h3 class="text-sm font-semibold text-slate-700 mb-3">{{ t.laporan_langkah_disarankan }}</h3>
+        <ul class="space-y-3">
+          <li class="flex items-start gap-3">
+            <svg class="w-5 h-5 text-emerald-500 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+            <p class="text-sm text-slate-600">{{ t.laporan_langkah_1 }}</p>
+          </li>
+          <li class="flex items-start gap-3">
+            <svg class="w-5 h-5 text-emerald-500 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+            <p class="text-sm text-slate-600">{{ t.laporan_langkah_2 }}</p>
+          </li>
+          <li class="flex items-start gap-3">
+            <svg class="w-5 h-5 text-emerald-500 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+            <p class="text-sm text-slate-600">
+              {% if retakan_terdeteksi or robek_terdeteksi %}
+                {{ t.laporan_langkah_3_masalah }}
+              {% else %}
+                {{ t.laporan_langkah_3_normal }}
+              {% endif %}
+            </p>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ KOLOM KANAN ============ -->
+  <div class="lg:col-span-1 space-y-6">
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+      <h2 class="font-semibold text-slate-800 mb-4">{{ t.laporan_info_deteksi }}</h2>
+      <div class="space-y-3.5 text-sm">
+        <div class="flex items-center justify-between">
+          <span class="text-slate-500">{{ t.laporan_waktu_deteksi }}</span>
+          <span class="font-medium text-slate-700 text-right">{{ item.created_at|date:tgl_format }}, {{ item.created_at|date:"H:i" }}</span>
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="text-slate-500">{{ t.laporan_durasi_proses }}</span>
+          <span class="font-medium text-slate-700">{{ item.processing_ms|default:"-" }} ms</span>
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="text-slate-500">{{ t.laporan_metode }}</span>
+          <span class="font-medium text-slate-700 text-right">{{ t.laporan_metode_ml_nilai }}</span>
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="text-slate-500">{{ t.laporan_keyakinan }}</span>
+          <span class="font-medium text-slate-700">{{ item.confidence }}%</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+      <h2 class="font-semibold text-slate-800 mb-5">{{ t.laporan_statistik_keseluruhan }}</h2>
+      <div class="flex items-center gap-5">
+        <div class="relative w-24 h-24 flex-shrink-0">
+          <svg viewBox="0 0 100 100" class="w-24 h-24 -rotate-90">
+            <circle cx="50" cy="50" r="42" fill="none" stroke="#e2e8f0" stroke-width="12"/>
+            {% for s in stats %}
+            <circle cx="50" cy="50" r="42" fill="none" stroke="{% if s.key == 'BAIK' %}#10b981{% elif s.key == 'PERHATIAN' %}#f59e0b{% else %}#ef4444{% endif %}"
+                    stroke-width="12" stroke-dasharray="{{ s.dash }} {{ s.dash_gap }}" stroke-dashoffset="{{ s.dash_offset }}"/>
+            {% endfor %}
+          </svg>
+        </div>
+        <div class="flex-1 space-y-2 text-sm">
+          {% for s in stats %}
+          <div class="flex items-center justify-between">
+            <span class="flex items-center gap-1.5 text-slate-600"><span class="w-2.5 h-2.5 rounded-full {{ s.meta.dot }}"></span>{{ s.key|status_title:bahasa_aktif }}</span>
+            <span class="text-slate-500">{{ s.count }} ({{ s.pct }}%)</span>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="flex items-center justify-between mt-5 pt-4 border-t border-slate-100 text-sm">
+        <span class="text-slate-500">{{ t.laporan_total_deteksi }}</span>
+        <span class="font-semibold text-slate-800">{{ total_deteksi }}</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ KONTEN SIAP CETAK (tersembunyi di layar, tampil saat print) ============ -->
+<div id="laporan-print-content" class="print-only">
+  <div class="print-header">
+    <div class="print-header-left">
+      <p class="print-brand">Jagoban</p>
+      <h1>{{ t.laporan_judul }}</h1>
+    </div>
+  </div>
+
+  <div class="print-section print-main">
+    {% if item.image %}
+      <img src="{{ item.image.url }}" alt="Foto ban" class="print-photo">
+    {% endif %}
+    <table class="print-table">
+      <tr><td>{{ t.laporan_tanggal_deteksi }}</td><td>{{ item.created_at|date:tgl_format }}, {{ item.created_at|date:"H:i" }} {{ t.common_wib }}</td></tr>
+      <tr><td>{{ t.laporan_metode_deteksi }}</td><td>{{ t.laporan_metode_nilai }}</td></tr>
+      <tr><td>{{ t.laporan_kelas_terdeteksi }}</td><td>{{ item.code_label|kelas_i18n:bahasa_aktif }}</td></tr>
+      <tr><td>{{ t.laporan_ukuran_gambar }}</td><td>{% if item.width and item.height %}{{ item.width }} x {{ item.height }} px{% else %}-{% endif %}</td></tr>
+      <tr><td>{{ t.laporan_durasi_proses }}</td><td>{{ item.processing_ms|default:"-" }} ms</td></tr>
+      <tr><td>{{ t.laporan_file_asli }}</td><td>{{ item.original_filename|default:"-" }}</td></tr>
+    </table>
+  </div>
+
+  <div class="print-section print-badge">
+    <p class="print-label">{{ t.laporan_kondisi_ban }}</p>
+    <p class="print-badge-value">{{ item.label|status_title:bahasa_aktif }}</p>
+    <p class="print-label" style="margin-top:10px;">{{ t.laporan_tingkat_keyakinan }}</p>
+    <p class="print-confidence">{{ item.confidence }}%</p>
+    <p class="print-desc">{{ item.label|status_desc:bahasa_aktif }}</p>
+  </div>
+
+  <div class="print-grid-2">
+    <div class="print-section">
+      <h2>{{ t.laporan_ringkasan_hasil }}</h2>
+      <p><strong>{{ item.code_label|kelas_i18n:bahasa_aktif }} &mdash; {{ item.label|status_title:bahasa_aktif }}</strong></p>
+      <p class="print-desc">{{ item.label|status_desc:bahasa_aktif }}</p>
+    </div>
+
+    <div class="print-section">
+      <h2>{{ t.laporan_probabilitas_per_kelas }}</h2>
+      <table class="print-table">
+        {% for b in breakdown %}
+        <tr><td>{{ b.code|kelas_i18n:bahasa_aktif }}</td><td>{{ b.value }}%</td></tr>
+        {% endfor %}
+      </table>
+    </div>
+  </div>
+
+  <div class="print-grid-2">
+    <div class="print-section">
+      <h2>{{ t.laporan_tab_detail }}</h2>
+      <p class="print-desc">
+        {% if bahasa_aktif == "en" %}
+        The analysis was performed with a feature-extraction pipeline (LBP, GLCM, Gabor, Wavelet, Canny, Hu Moments)
+        processed through a scaler, PCA, and an SVM model. The class with the highest probability
+        ({{ item.code_label|kelas_i18n:bahasa_aktif }}, {{ item.confidence }}%) was selected as the final result.
+        {% else %}
+        Analisis dilakukan dengan pipeline ekstraksi fitur (LBP, GLCM, Gabor, Wavelet, Canny, Hu Moments)
+        yang diproses melalui scaler, PCA, dan model SVM. Kelas dengan probabilitas tertinggi
+        ({{ item.code_label|kelas_i18n:bahasa_aktif }}, {{ item.confidence }}%) dipilih sebagai hasil akhir.
+        {% endif %}
+      </p>
+      <table class="print-table">
+        <tr><td>{{ t.laporan_kode_kelas_model }}</td><td>{{ item.code_label }}</td></tr>
+        <tr><td>{{ t.laporan_user_agent }}</td><td>{{ item.user_agent|default:"-" }}</td></tr>
+      </table>
+    </div>
+
+    <div class="print-section">
+      <h2>{{ t.laporan_rekomendasi }}</h2>
+      <p class="print-desc">{{ item.rekomendasi }}</p>
+      <ul>
+        <li>{{ t.laporan_langkah_1 }}</li>
+        <li>{{ t.laporan_langkah_2 }}</li>
+        <li>
+          {% if retakan_terdeteksi or robek_terdeteksi %}
+            {{ t.laporan_langkah_3_masalah }}
+          {% else %}
+            {{ t.laporan_langkah_3_normal }}
+          {% endif %}
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="print-section">
+    <h2>{{ t.laporan_statistik_keseluruhan }}</h2>
+    <table class="print-table">
+      {% for s in stats %}
+      <tr><td>{{ s.key|status_title:bahasa_aktif }}</td><td>{{ s.count }} ({{ s.pct }}%)</td></tr>
+      {% endfor %}
+      <tr><td><strong>{{ t.laporan_total_deteksi }}</strong></td><td><strong>{{ total_deteksi }}</strong></td></tr>
+    </table>
+  </div>
+
+  <div class="print-signature">
+    <div class="print-signature-box">
+      <p>Jakarta, {{ item.created_at|date:"d F Y" }}</p>
+      <div class="print-signature-space"></div>
+      <p class="print-signature-name">Jagoban</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MODAL PREVIEW ============ -->
+<div id="preview-modal-overlay" class="preview-modal-overlay no-print hidden">
+  <div class="preview-modal-box">
+    <div class="preview-modal-topbar">
+      <h3>{{ t.laporan_preview_judul }}</h3>
+      <button id="btn-close-preview" type="button" class="preview-modal-close" aria-label="Tutup preview">&times;</button>
+    </div>
+    <div id="preview-modal-body" class="preview-modal-body"></div>
+    <div class="preview-modal-footer">
+      <button id="btn-preview-cetak" type="button" class="preview-btn preview-btn-primary">{{ t.laporan_cetak_unduh }}</button>
+      <button id="btn-preview-tutup" type="button" class="preview-btn preview-btn-secondary">{{ t.common_tutup }}</button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  window.LAPORAN_I18N = {
+    judul: "{{ t.laporan_judul|escapejs }}",
+    tautanDisalin: "{{ t.laporan_tautan_disalin|escapejs }}"
+  };
+  (function () {
+    var tabs = document.querySelectorAll('.laporan-tab');
+    var panels = {
+      ringkasan: document.getElementById('panel-ringkasan'),
+      detail: document.getElementById('panel-detail'),
+      rekomendasi: document.getElementById('panel-rekomendasi'),
+    };
+    tabs.forEach(function (tab) {
+      tab.addEventListener('click', function () {
+        tabs.forEach(function (t) {
+          t.classList.remove('border-blue-600', 'text-blue-600');
+          t.classList.add('border-transparent', 'text-slate-500');
+        });
+        tab.classList.add('border-blue-600', 'text-blue-600');
+        tab.classList.remove('border-transparent', 'text-slate-500');
+
+        Object.keys(panels).forEach(function (key) {
+          panels[key].classList.add('hidden');
+        });
+        panels[tab.dataset.tab].classList.remove('hidden');
+      });
+    });
+
+    var btnDownload = document.getElementById('btn-download-pdf');
+    if (btnDownload) {
+      btnDownload.addEventListener('click', function () {
+        window.print();
+      });
+    }
+
+    // ── Preview Laporan ──────────────────────────────
+    var btnPreview = document.getElementById('btn-preview-pdf');
+    var overlay = document.getElementById('preview-modal-overlay');
+    var modalBody = document.getElementById('preview-modal-body');
+    var printSource = document.getElementById('laporan-print-content');
+    var btnClosePreview = document.getElementById('btn-close-preview');
+    var btnPreviewTutup = document.getElementById('btn-preview-tutup');
+    var btnPreviewCetak = document.getElementById('btn-preview-cetak');
+
+    function openPreview() {
+      if (printSource) {
+        modalBody.innerHTML = printSource.innerHTML;
+      }
+      overlay.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closePreview() {
+      overlay.classList.add('hidden');
+      document.body.style.overflow = '';
+    }
+
+    if (btnPreview) btnPreview.addEventListener('click', openPreview);
+    if (btnClosePreview) btnClosePreview.addEventListener('click', closePreview);
+    if (btnPreviewTutup) btnPreviewTutup.addEventListener('click', closePreview);
+    if (btnPreviewCetak) btnPreviewCetak.addEventListener('click', function () { window.print(); });
+
+    overlay.addEventListener('click', function (e) {
+      if (e.target === overlay) closePreview();
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && !overlay.classList.contains('hidden')) closePreview();
+    });
+
+    var btnShare = document.getElementById('btn-bagikan');
+    if (btnShare) {
+      btnShare.addEventListener('click', function () {
+        var url = window.location.href;
+        if (navigator.share) {
+          navigator.share({ title: (window.LAPORAN_I18N && window.LAPORAN_I18N.judul) || 'Laporan Deteksi Ban', url: url }).catch(function () {});
+        } else if (navigator.clipboard) {
+          navigator.clipboard.writeText(url).then(function () {
+            var original = btnShare.innerHTML;
+            btnShare.innerHTML = '<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> ' + ((window.LAPORAN_I18N && window.LAPORAN_I18N.tautanDisalin) || 'Tautan disalin');
+            setTimeout(function () { btnShare.innerHTML = original; }, 1800);
+          });
+        }
+      });
+    }
+  })();
+</script>
+{% endblock %}

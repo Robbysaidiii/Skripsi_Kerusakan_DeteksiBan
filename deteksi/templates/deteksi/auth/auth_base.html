@@ -1,0 +1,81 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}Deteksi Ban{% endblock %}</title>
+<link rel="stylesheet" href="{% static 'deteksi/css/tailwind.css' %}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'deteksi/css/style.css' %}">
+</head>
+<body class="bg-[#f5f6fa] text-slate-800 min-h-screen" style="font-family:'Inter',sans-serif;">
+
+{% if messages %}
+<div class="settings-toast space-y-2">
+  {% for message in messages %}
+  <div class="flex items-center gap-2 {% if message.tags == 'error' %}bg-red-50 border border-red-200 text-red-700{% else %}bg-emerald-50 border border-emerald-200 text-emerald-700{% endif %} text-sm font-medium px-4 py-3 rounded-xl shadow-md max-w-sm">
+    <svg class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      {% if message.tags == 'error' %}
+      <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v4m0 4h.01M10.3 3.9 1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/>
+      {% else %}
+      <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+      {% endif %}
+    </svg>
+    {{ message }}
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+<div class="min-h-screen flex items-center justify-center p-4 sm:p-6">
+  <div class="w-full max-w-4xl bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden grid grid-cols-1 lg:grid-cols-2">
+
+    <!-- ============ PANEL BRANDING (kiri, tersembunyi di mobile) ============ -->
+    <div class="hidden lg:flex flex-col justify-between bg-blue-600 p-10 text-white">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-full bg-white/15 flex items-center justify-center">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" class="w-6 h-6 text-white">
+            <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/>
+            <circle cx="12" cy="12" r="3.2" stroke="currentColor" stroke-width="1.6"/>
+            <path d="M12 3v3.4M12 17.6V21M3 12h3.4M17.6 12H21" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <span class="font-bold text-lg tracking-tight">Deteksi Ban</span>
+      </div>
+
+      <div>
+        <h1 class="text-2xl font-bold leading-snug mb-3">{% block brand_title %}Deteksi kondisi ban dalam hitungan detik.{% endblock %}</h1>
+        <p class="text-blue-100 text-sm leading-relaxed">{% block brand_subtitle %}Ambil foto lewat kamera atau upload gambar, sistem kami akan menganalisis kondisi ban kamu secara otomatis.{% endblock %}</p>
+      </div>
+
+      <div class="flex items-center gap-2 text-blue-100 text-xs">
+        <svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 3l7 3v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z"/>
+        </svg>
+        Data & gambar kamu aman dan tidak dibagikan tanpa izin.
+      </div>
+    </div>
+
+    <!-- ============ PANEL FORM (kanan) ============ -->
+    <div class="p-8 sm:p-10 flex flex-col justify-center">
+      <div class="flex items-center gap-3 mb-8 lg:hidden">
+        <div class="w-9 h-9 rounded-full bg-blue-600 flex items-center justify-center">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" class="w-5 h-5 text-white">
+            <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/>
+            <circle cx="12" cy="12" r="3.2" stroke="currentColor" stroke-width="1.6"/>
+            <path d="M12 3v3.4M12 17.6V21M3 12h3.4M17.6 12H21" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <span class="font-bold text-lg tracking-tight text-slate-900">Deteksi Ban</span>
+      </div>
+
+      {% block auth_content %}{% endblock %}
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>

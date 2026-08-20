@@ -1,0 +1,148 @@
+{% extends "deteksi/base.html" %}
+{% load static %}
+{% load i18n_extras %}
+{% block title %}Riwayat Deteksi{% endblock %}
+
+{% block content %}
+<div class="flex items-start justify-between gap-4 flex-wrap mb-6">
+  <div>
+    <h1 class="text-2xl font-bold text-slate-900">{{ t.riwayat_judul }}</h1>
+    <p class="text-slate-500 mt-1">{{ t.riwayat_subtitle }}</p>
+  </div>
+  <form method="get" class="flex items-center gap-3">
+    <div class="relative">
+      <svg class="w-5 h-5 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="7" stroke-linecap="round"/>
+        <path stroke-linecap="round" d="M20 20l-3.5-3.5"/>
+      </svg>
+      <input type="text" name="q" value="{{ request.GET.q }}" placeholder="{{ t.riwayat_cari_placeholder }}"
+             class="w-56 pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 text-sm text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-400">
+    </div>
+  </form>
+</div>
+
+<!-- ============ TAB FILTER STATUS ============ -->
+<div class="flex flex-wrap items-center gap-2.5 mb-5">
+  <a href="{% url 'deteksi:riwayat_page' %}"
+     class="riwayat-tab px-4 py-2 rounded-xl border-2 text-sm font-medium {% if not active_status %}border-blue-600 text-blue-600 bg-blue-50{% else %}border-slate-200 text-slate-600 hover:bg-slate-50{% endif %}">
+    {{ t.riwayat_tab_semua }} ({{ total_all }})
+  </a>
+  <a href="?status=BAIK" class="riwayat-tab flex items-center gap-2 px-4 py-2 rounded-xl border text-sm font-medium {% if active_status == 'BAIK' %}border-2 border-blue-600 text-blue-600 bg-blue-50{% else %}border-slate-200 text-slate-600 hover:bg-slate-50{% endif %}">
+    <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+    {{ t.riwayat_tab_baik }}
+  </a>
+  <a href="?status=PERHATIAN" class="riwayat-tab flex items-center gap-2 px-4 py-2 rounded-xl border text-sm font-medium {% if active_status == 'PERHATIAN' %}border-2 border-blue-600 text-blue-600 bg-blue-50{% else %}border-slate-200 text-slate-600 hover:bg-slate-50{% endif %}">
+    <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+    {{ t.riwayat_tab_perhatian }}
+  </a>
+  <a href="?status=BERMASALAH" class="riwayat-tab flex items-center gap-2 px-4 py-2 rounded-xl border text-sm font-medium {% if active_status == 'BERMASALAH' %}border-2 border-blue-600 text-blue-600 bg-blue-50{% else %}border-slate-200 text-slate-600 hover:bg-slate-50{% endif %}">
+    <span class="w-2.5 h-2.5 rounded-full bg-red-500"></span>
+    {{ t.riwayat_tab_bermasalah }}
+  </a>
+</div>
+
+<!-- ============ TABEL RIWAYAT ============ -->
+<div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+  <div class="overflow-x-auto">
+    <table class="w-full text-sm">
+      <thead>
+        <tr class="border-b border-slate-200 text-left text-slate-500">
+          <th class="font-semibold px-6 py-4 whitespace-nowrap">{{ t.riwayat_th_tanggal }}</th>
+          <th class="font-semibold px-6 py-4 whitespace-nowrap">{{ t.riwayat_th_gambar }}</th>
+          <th class="font-semibold px-6 py-4 whitespace-nowrap">{{ t.riwayat_th_kondisi }}</th>
+          <th class="font-semibold px-6 py-4 whitespace-nowrap">{{ t.riwayat_th_ringkasan }}</th>
+          <th class="font-semibold px-6 py-4 whitespace-nowrap">{{ t.riwayat_th_aksi }}</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-slate-100">
+        {% for row in riwayat_list %}
+        {% with item=row.obj meta=row.meta %}
+        <tr>
+          <td class="px-6 py-5 align-top whitespace-nowrap">
+            <p class="font-semibold text-slate-800">{{ item.created_at|date:tgl_format }}</p>
+            <p class="text-slate-400 text-xs mt-0.5">{{ item.created_at|date:"H:i" }} {{ t.common_wib }}</p>
+          </td>
+
+          <td class="px-6 py-5 align-top">
+            <div class="w-24 h-16 rounded-lg overflow-hidden bg-slate-800 flex items-center justify-center">
+              {% if item.image %}
+                <img src="{{ item.image.url }}" alt="Foto ban" class="w-full h-full object-cover">
+              {% else %}
+                <svg viewBox="0 0 100 100" class="w-12 h-12">
+                  <circle cx="50" cy="50" r="38" fill="#1e293b" stroke="#475569" stroke-width="3"/>
+                  <circle cx="50" cy="50" r="16" fill="#94a3b8"/>
+                </svg>
+              {% endif %}
+            </div>
+          </td>
+
+          <td class="px-6 py-5 align-top">
+            <span class="inline-block text-xs font-semibold {{ meta.badge }} rounded-full px-3 py-1">{{ item.label|status_title:bahasa_aktif }}</span>
+            <p class="font-semibold text-slate-800 mt-2">{{ t.riwayat_keyakinan }}: {{ item.confidence }}%</p>
+            <p class="text-slate-400 text-xs mt-0.5 max-w-[220px] leading-relaxed">{{ item.label|status_desc:bahasa_aktif }}</p>
+          </td>
+
+          <td class="px-6 py-5 align-top">
+            <div class="space-y-2 text-sm">
+              <div class="flex items-center gap-2.5">
+                <svg class="w-4 h-4 text-slate-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><rect x="3" y="7" width="18" height="10" rx="2"/><path stroke-linecap="round" d="M7 7v10M11 7v10M15 7v10"/></svg>
+                <span class="text-slate-500">{{ t.riwayat_kelas_terdeteksi }}</span>
+                <span class="font-medium text-slate-700 ml-auto">{{ item.code_label|kelas_i18n:bahasa_aktif }}</span>
+              </div>
+              <div class="flex items-center gap-2.5">
+                <svg class="w-4 h-4 text-slate-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <span class="text-slate-500">{{ t.riwayat_durasi_proses }}</span>
+                <span class="font-medium text-slate-700 ml-auto">{{ item.processing_ms|default:"-" }} ms</span>
+              </div>
+            </div>
+          </td>
+
+          <td class="px-6 py-5 align-top">
+            <div class="flex items-center gap-2">
+              <a href="{% url 'deteksi:laporan_page' item.pk %}"
+                class="flex items-center gap-2 border-2 border-blue-600 text-blue-600 hover:bg-blue-50 text-sm font-medium px-4 py-2 rounded-xl transition">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M7 3h7l4 4v14a1 1 0 01-1 1H7a1 1 0 01-1-1V4a1 1 0 011-1z"/>
+                  <path stroke-linecap="round" d="M9 12h6M9 16h6M9 8h2"/>
+                </svg>
+                {{ t.riwayat_lihat_laporan }}
+              </a>
+            </div>
+          </td>
+        </tr>
+        {% endwith %}
+        {% empty %}
+        <tr>
+          <td colspan="5" class="px-6 py-12 text-center text-slate-400">
+            {{ t.riwayat_kosong }}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ============ PAGINASI ============ -->
+  {% if page_obj.paginator.num_pages > 1 %}
+  <div class="flex items-center justify-between px-6 py-4 border-t border-slate-100">
+    <p class="text-sm text-slate-400">
+      {{ t.riwayat_menampilkan }} {{ page_obj.start_index }}&ndash;{{ page_obj.end_index }} {{ t.riwayat_dari }} {{ page_obj.paginator.count }} {{ t.riwayat_data }}
+    </p>
+    <div class="flex items-center gap-1.5">
+      <a href="?page={{ page_obj.previous_page_number }}{% if active_status %}&status={{ active_status }}{% endif %}"
+         class="w-8 h-8 flex items-center justify-center rounded-lg border border-slate-200 text-slate-400 hover:bg-slate-50 {% if not page_obj.has_previous %}pointer-events-none opacity-40{% endif %}">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 6l-6 6 6 6"/></svg>
+      </a>
+      {% for num in page_obj.paginator.page_range %}
+        <a href="?page={{ num }}{% if active_status %}&status={{ active_status }}{% endif %}"
+           class="w-8 h-8 flex items-center justify-center rounded-lg text-sm font-medium {% if num == page_obj.number %}bg-blue-600 text-white font-semibold{% else %}text-slate-500 hover:bg-slate-50{% endif %}">{{ num }}</a>
+      {% endfor %}
+      <a href="?page={{ page_obj.next_page_number }}{% if active_status %}&status={{ active_status }}{% endif %}"
+         class="w-8 h-8 flex items-center justify-center rounded-lg border border-slate-200 text-slate-400 hover:bg-slate-50 {% if not page_obj.has_next %}pointer-events-none opacity-40{% endif %}">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 6l6 6-6 6"/></svg>
+      </a>
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

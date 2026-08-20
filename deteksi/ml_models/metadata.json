@@ -1,0 +1,70 @@
+{
+  "version": "v5_parallel",
+  "img_size": [
+    224,
+    224
+  ],
+  "fitur": [
+    "LBP_multi",
+    "GLCM",
+    "Gabor",
+    "Wavelet",
+    "Canny",
+    "HuMoments"
+  ],
+  "feature_dim": {
+    "lbp_multi": 768,
+    "glcm": 96,
+    "gabor": 100,
+    "wavelet": 54,
+    "canny": 65,
+    "hu_moments": 7,
+    "total": 1090
+  },
+  "pca_components": 59,
+  "pca_variance_kept": 0.95,
+  "classes": [
+    "Tear",
+    "cracked",
+    "normal"
+  ],
+  "best_params": {
+    "C": 50,
+    "gamma": 0.005,
+    "kernel": "rbf"
+  },
+  "accuracy_baseline": 0.7575,
+  "accuracy_final": 0.7351,
+  "cv_baseline": {
+    "mean": 0.8693,
+    "std": 0.0109
+  },
+  "cv_final": {
+    "mean": 0.8722,
+    "std": 0.011
+  },
+  "n_train": 2027,
+  "n_test": 268,
+  "n_jobs_feat": -1,
+  "n_jobs_cv": -1,
+  "report_final": {
+    "Tear": {
+      "precision": 0.5932,
+      "recall": 0.9459,
+      "f1-score": 0.7292,
+      "support": 37.0
+    },
+    "cracked": {
+      "precision": 0.9043,
+      "recall": 0.6541,
+      "f1-score": 0.7591,
+      "support": 159.0
+    },
+    "normal": {
+      "precision": 0.617,
+      "recall": 0.8056,
+      "f1-score": 0.6988,
+      "support": 72.0
+    }
+  }
+}

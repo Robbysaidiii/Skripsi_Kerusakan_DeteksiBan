@@ -1,0 +1,9 @@
+Django>=5.0,<6.1
+webauthn
+numpy
+scikit-learn==1.6.1
+scikit-image
+opencv-python-headless
+PyWavelets
+joblib
+Pillow

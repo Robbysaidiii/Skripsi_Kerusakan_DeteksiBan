@@ -1,0 +1,263 @@
+{% extends "deteksi/base.html" %}
+{% load static %}
+{% block title %}Informasi Akun{% endblock %}
+
+{% block content %}
+
+{% if messages %}
+<div class="settings-toast">
+  {% for message in messages %}
+  <div id="profil-toast-msg" class="flex items-center gap-2 {% if message.tags == 'error' %}bg-red-50 border border-red-200 text-red-700{% else %}bg-emerald-50 border border-emerald-200 text-emerald-700{% endif %} text-sm font-medium px-4 py-3 rounded-xl shadow-md">
+    <svg class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      {% if message.tags == 'error' %}
+      <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v4m0 4h.01M10.3 3.9 1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/>
+      {% else %}
+      <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+      {% endif %}
+    </svg>
+    {{ message }}
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+<div class="mb-6">
+  <h1 class="text-2xl font-bold text-slate-900">{{ t.profil_judul }}</h1>
+  <p class="text-slate-500 mt-1">{{ t.profil_subtitle }}</p>
+</div>
+
+<div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 sm:p-8">
+  <div class="flex items-center justify-between gap-4 mb-8">
+    <h2 class="text-lg font-bold text-slate-900">{{ t.profil_judul }}</h2>
+    <button type="button" id="btn-edit-profil"
+      class="flex items-center gap-2 border border-blue-200 text-blue-600 hover:bg-blue-50 font-medium text-sm px-4 py-2 rounded-lg transition flex-shrink-0">
+      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M11 4H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2v-5"/>
+        <path stroke-linecap="round" stroke-linejoin="round" d="M18.5 2.5a2.1 2.1 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+      </svg>
+      {{ t.profil_edit }}
+    </button>
+  </div>
+
+  <div class="flex flex-col md:flex-row gap-8 md:gap-12">
+
+    <!-- ============ FOTO PROFIL ============ -->
+    <div class="flex flex-col items-center flex-shrink-0 md:w-48">
+      <div class="relative">
+        <div class="w-28 h-28 rounded-full flex items-center justify-center overflow-hidden" style="background:#1e3a70;">
+          {% if akun.foto %}
+          <img src="{{ akun.foto.url }}" alt="{{ akun.nama_lengkap }}" class="w-full h-full object-cover">
+          {% else %}
+          <svg class="w-14 h-14 text-white/90" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+            <circle cx="12" cy="9" r="4"/>
+            <path stroke-linecap="round" d="M4.5 20c1.6-4.2 5-6.5 7.5-6.5s5.9 2.3 7.5 6.5"/>
+          </svg>
+          {% endif %}
+        </div>
+        <button type="button" id="btn-ganti-foto"
+          class="absolute bottom-0 right-0 w-9 h-9 rounded-full bg-white border border-slate-200 shadow-sm flex items-center justify-center text-slate-500 hover:text-blue-600 hover:border-blue-200 transition"
+          aria-label="Ganti foto profil">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 8.5A1.5 1.5 0 015.5 7h2l1-1.6A1 1 0 019.4 5h5.2a1 1 0 01.9.6L16.5 7h2A1.5 1.5 0 0120 8.5v9A1.5 1.5 0 0118.5 19h-13A1.5 1.5 0 014 17.5v-9z"/>
+            <circle cx="12" cy="13" r="3.2"/>
+          </svg>
+        </button>
+      </div>
+      <p class="text-xs text-slate-400 mt-3 text-center">{{ t.profil_foto_hint }}</p>
+
+      <form id="form-upload-foto" method="post" action="{% url 'deteksi:upload_foto_profil' %}" enctype="multipart/form-data" class="hidden">
+        {% csrf_token %}
+        <input type="file" id="input-foto" name="foto" accept="image/jpeg,image/png">
+      </form>
+    </div>
+
+    <!-- ============ DATA AKUN ============ -->
+    <div class="flex-1 min-w-0">
+      <div class="space-y-5">
+
+        <div class="flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-6">
+          <label class="w-full sm:w-40 flex-shrink-0 text-sm font-medium text-slate-600">{{ t.profil_nama_lengkap }}</label>
+          <div class="flex-1 border border-slate-200 rounded-lg px-4 py-2.5 text-sm text-slate-700 bg-white">
+            {{ akun.nama_lengkap }}
+          </div>
+        </div>
+
+        <div class="flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-6">
+          <label class="w-full sm:w-40 flex-shrink-0 text-sm font-medium text-slate-600">{{ t.profil_email }}</label>
+          <div class="flex-1 flex items-center gap-3 flex-wrap">
+            <div class="flex-1 min-w-[180px] border border-slate-200 rounded-lg px-4 py-2.5 text-sm text-slate-700 bg-white">
+              {{ akun.email|default:"—" }}
+            </div>
+            {% if akun.email_terverifikasi %}
+            <span class="flex-shrink-0 inline-flex items-center px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-600 text-xs font-semibold">{{ t.profil_terverifikasi }}</span>
+            {% else %}
+            <span class="flex-shrink-0 inline-flex items-center px-2.5 py-1 rounded-full bg-amber-50 text-amber-600 text-xs font-semibold">{{ t.profil_belum_verifikasi }}</span>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-6">
+          <label class="w-full sm:w-40 flex-shrink-0 text-sm font-medium text-slate-600">{{ t.profil_nomor_telepon }}</label>
+          <div class="flex-1 flex items-center gap-3 flex-wrap">
+            <div class="flex-1 min-w-[180px] border border-slate-200 rounded-lg px-4 py-2.5 text-sm text-slate-700 bg-white">
+              {{ akun.telepon|default:"—" }}
+            </div>
+            <button type="button" id="btn-ubah-telepon"
+              class="flex-shrink-0 border border-blue-200 text-blue-600 hover:bg-blue-50 font-medium text-sm px-4 py-2 rounded-lg transition">
+              {{ t.profil_ubah }}
+            </button>
+          </div>
+        </div>
+
+        <div class="flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-6">
+          <label class="w-full sm:w-40 flex-shrink-0 text-sm font-medium text-slate-600">{{ t.profil_peran }}</label>
+          <div class="flex-1 border border-slate-200 rounded-lg px-4 py-2.5 text-sm text-slate-400 bg-slate-50">
+            {{ akun.get_peran_display }}
+          </div>
+        </div>
+
+        <div class="flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-6">
+          <label class="w-full sm:w-40 flex-shrink-0 text-sm font-medium text-slate-600">{{ t.profil_bergabung_sejak }}</label>
+          <div class="flex-1 px-1 py-2.5 text-sm text-slate-700">
+            {{ akun.created_at|date:tgl_format }}, {{ akun.created_at|date:"H:i" }} {{ t.common_wib }}
+          </div>
+        </div>
+
+        <div class="flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-6">
+          <label class="w-full sm:w-40 flex-shrink-0 text-sm font-medium text-slate-600">{{ t.profil_id_pengguna }}</label>
+          <div class="flex-1 relative">
+            <div class="border border-slate-200 rounded-lg pl-4 pr-11 py-2.5 text-sm text-slate-700 bg-white font-mono">
+              {{ akun.kode_pengguna }}
+            </div>
+            <button type="button" id="btn-copy-id" data-id="{{ akun.kode_pengguna }}"
+              class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-blue-600 transition"
+              aria-label="Salin ID Pengguna">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                <rect x="8.5" y="8.5" width="11" height="11" rx="1.5"/>
+                <path stroke-linecap="round" d="M4.5 15.5v-10a1 1 0 011-1h10"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MODAL EDIT PROFIL ============ -->
+<div id="edit-profil-overlay" class="preview-modal-overlay hidden">
+  <div class="preview-modal-box" style="max-width: 440px;">
+    <form method="post" action="{% url 'deteksi:profil_page' %}">
+      {% csrf_token %}
+      <div class="preview-modal-topbar">
+        <h3>{{ t.profil_edit_modal_judul }}</h3>
+        <button type="button" id="btn-close-edit-profil" class="preview-modal-close" aria-label="Tutup">&times;</button>
+      </div>
+      <div class="preview-modal-body">
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-slate-600 mb-1.5">{{ t.profil_nama_lengkap }}</label>
+          <input type="text" name="nama_lengkap" value="{{ akun.nama_lengkap }}" required
+            class="w-full border border-slate-200 rounded-lg px-4 py-2.5 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-400">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-slate-600 mb-1.5">{{ t.profil_email }}</label>
+          <input type="email" name="email" value="{{ akun.email }}"
+            class="w-full border border-slate-200 rounded-lg px-4 py-2.5 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-400">
+          {% if akun.email %}
+          <p class="text-xs text-slate-400 mt-1.5">{{ t.profil_ubah_email_hint }}</p>
+          {% endif %}
+        </div>
+      </div>
+      <div class="preview-modal-footer">
+        <button type="button" id="btn-batal-edit-profil" class="preview-btn preview-btn-secondary">{{ t.common_batal }}</button>
+        <button type="submit" class="preview-btn preview-btn-primary">{{ t.common_simpan }}</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ============ MODAL UBAH TELEPON ============ -->
+<div id="ubah-telepon-overlay" class="preview-modal-overlay hidden">
+  <div class="preview-modal-box" style="max-width: 400px;">
+    <form method="post" action="{% url 'deteksi:ubah_telepon' %}">
+      {% csrf_token %}
+      <div class="preview-modal-topbar">
+        <h3>{{ t.profil_ubah_telepon_modal_judul }}</h3>
+        <button type="button" id="btn-close-ubah-telepon" class="preview-modal-close" aria-label="Tutup">&times;</button>
+      </div>
+      <div class="preview-modal-body">
+        <label class="block text-sm font-medium text-slate-600 mb-1.5">{{ t.profil_nomor_telepon }}</label>
+        <input type="text" name="telepon" value="{{ akun.telepon }}" placeholder="+62 812-3456-7890" required
+          class="w-full border border-slate-200 rounded-lg px-4 py-2.5 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-400">
+      </div>
+      <div class="preview-modal-footer">
+        <button type="button" id="btn-batal-ubah-telepon" class="preview-btn preview-btn-secondary">{{ t.common_batal }}</button>
+        <button type="submit" class="preview-btn preview-btn-primary">{{ t.common_simpan }}</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+  function wireModal(overlayId, openBtnId, closeBtnIds) {
+    const overlay = document.getElementById(overlayId);
+    const openBtn = document.getElementById(openBtnId);
+    if (!overlay) return;
+    function open() { overlay.classList.remove('hidden'); }
+    function close() { overlay.classList.add('hidden'); }
+    if (openBtn) openBtn.addEventListener('click', open);
+    closeBtnIds.forEach(function (id) {
+      const btn = document.getElementById(id);
+      if (btn) btn.addEventListener('click', close);
+    });
+    overlay.addEventListener('click', function (e) {
+      if (e.target === overlay) close();
+    });
+  }
+
+  wireModal('edit-profil-overlay', 'btn-edit-profil', ['btn-close-edit-profil', 'btn-batal-edit-profil']);
+  wireModal('ubah-telepon-overlay', 'btn-ubah-telepon', ['btn-close-ubah-telepon', 'btn-batal-ubah-telepon']);
+
+  // ---- Upload foto profil: klik ikon kamera -> pilih file -> auto submit ----
+  const btnGantiFoto = document.getElementById('btn-ganti-foto');
+  const inputFoto = document.getElementById('input-foto');
+  const formUploadFoto = document.getElementById('form-upload-foto');
+  if (btnGantiFoto && inputFoto) {
+    btnGantiFoto.addEventListener('click', function () { inputFoto.click(); });
+    inputFoto.addEventListener('change', function () {
+      if (inputFoto.files && inputFoto.files.length > 0) {
+        formUploadFoto.submit();
+      }
+    });
+  }
+
+  // ---- Salin ID Pengguna ----
+  const btnCopyId = document.getElementById('btn-copy-id');
+  if (btnCopyId) {
+    btnCopyId.addEventListener('click', function () {
+      const id = btnCopyId.dataset.id || '';
+      if (!navigator.clipboard) return;
+      navigator.clipboard.writeText(id).then(function () {
+        const original = btnCopyId.innerHTML;
+        btnCopyId.innerHTML = '<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>';
+        setTimeout(function () { btnCopyId.innerHTML = original; }, 1500);
+      }).catch(function () {});
+    });
+  }
+
+  const toast = document.getElementById('profil-toast-msg');
+  if (toast) {
+    setTimeout(function () {
+      toast.style.transition = 'opacity .4s ease';
+      toast.style.opacity = '0';
+      setTimeout(function () { toast.parentElement.remove(); }, 400);
+    }, 3500);
+  }
+})();
+</script>
+{% endblock %}
